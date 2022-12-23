@@ -3,49 +3,76 @@ const operators = document.querySelectorAll('.operator')
 const screenEl = document.querySelector('#screen')
 const equalsEl = document.querySelector('#equals')
 const clearEl = document.querySelector('#clear')
-
-
+const dot = document.querySelector('#dot')
 
 let displayValue;
 let tmpArray = []
 let numbersArray = []
-let symbol = ''
+let symbol = []
+let storedVal = 0
+let calculation = []
+
 
 
 numbers.forEach(number => number.addEventListener('click' , (e) => {
     tmpArray.push(parseInt(e.target.textContent))
-    console.log(tmpArray.join(''))
-    displayValue = tmpArray.join('')
-    screenEl.textContent = displayValue
+    screenEl.textContent = tmpArray.join('')
 }))
 
 operators.forEach(operator => operator.addEventListener('click', (e) => {
-    screen.textContent = e.target.textContent
-    symbol = e.target.id
-    numbersArray.push(tmpArray.join(''))
-    tmpArray = []
+    calculation.push(currentNumber())
+    softClear()
+    screenEl.textContent = e.target.textContent
+    symbol.push(e.target.id)
+    if (symbol.length > 1) {
+        calculation.splice(1,1)
+    }
 }))
+
+const currentNumber = () => {
+    numbersArray.push(tmpArray.join(''))
+    return parseFloat(numbersArray)
+}
 
 //event listeners
 equalsEl.addEventListener('click', () => {
-    numbersArray.push(tmpArray.join(''))
-    operate(numbersArray[0], numbersArray[1], symbol)
 
-    tmpArray.push(operate(numbersArray[0], numbersArray[1], symbol))
-    numbersArray.splice(0, 2)
+    calculation.push(currentNumber())
+    storedVal = calculation[0]
+    for (i = 0; i<=symbol.length; i++) {
+        console.table(calculation)
+        console.log(storedVal)
+        console.log(symbol)
+        storedVal = operations(calculation[0], calculation[1])[symbol[0]]
+        screenEl.textContent = storedVal
+        symbol.splice(0,1)
+
+        calculation.splice(1,1)
+        calculation[0] = storedVal
+
+
+    }
+
 })
 
 clearEl.addEventListener('click', () => {
-    displayValue = ''
     screenEl.textContent = ''
     numbersArray = []
-    symbol = ''
+    symbol = []
     tmpArray = []
+    calculation = []
+    storedVal = 0
 })
 
+dot.addEventListener('click', (e) => {
+    tmpArray.push(e.target.textContent)
+    screenEl.textContent = tmpArray.join('')
+})
 
-
-
+const softClear = () => {
+    tmpArray = []
+    numbersArray = []
+}
 
 
 
@@ -65,10 +92,6 @@ const operations = (a, b) => {
         'modulo': modulo(a, b),
     }
 }
-const operate = (a, b, operator) => {
-    displayValue = operations(a, b)[operator]
-    screenEl.textContent = displayValue
-    console.log(operations(a, b)[operator])
-}
 
 
+//document.body.addEventListener('click', currentNumber)
