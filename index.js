@@ -5,63 +5,71 @@ const equalsEl = document.querySelector('#equals')
 const clearEl = document.querySelector('#clear')
 const dot = document.querySelector('#dot')
 
-let displayValue;
-let tmpArray = []
+
 let numbersArray = []
-let symbol = []
-let storedVal = 0
-let calculation = []
-
-
+let result = ''
+let tmpArray = []
+let firstOperand = ''
+let secondOperand = ''
+let currentOperation = null
 
 numbers.forEach(number => number.addEventListener('click' , (e) => {
-    tmpArray.push(parseInt(e.target.textContent))
-    screenEl.textContent = tmpArray.join('')
+    tmpArray.push(e.target.textContent)
+    screenEl.textContent = e.target.textContent
+    console.table(tmpArray)
 }))
 
 operators.forEach(operator => operator.addEventListener('click', (e) => {
-    calculation.push(currentNumber())
-    softClear()
-    screenEl.textContent = e.target.textContent
-    symbol.push(e.target.id)
-    if (symbol.length > 1) {
-        calculation.splice(1,1)
+    assignOperand()
+    if (firstOperand != '' && secondOperand != '') {
+        calculate()
+        currentOperation = e.target.id
+        screenEl.textContent = result  
+        tmpArray = []
+    } else {
+        assignOperand()
+        screenEl.textContent = result
+        currentOperation = e.target.id
+        tmpArray = []
     }
 }))
 
-const currentNumber = () => {
-    numbersArray.push(tmpArray.join(''))
-    return parseFloat(numbersArray)
+const getCurrentNumber = () => {
+    number = tmpArray.join('')
+    console.log(number)
+    return parseFloat(number)
+}
+
+function calculate() {
+    result = operations(firstOperand,secondOperand)[currentOperation]
+    firstOperand = result
+    screenEl.textContent = result
+}
+
+function assignOperand() {
+    if (firstOperand === '') {
+        firstOperand = getCurrentNumber()
+        console.log('hello')
+    } else {
+        secondOperand = getCurrentNumber()
+        console.log('kjsdnsakjdbsajkdb')
+    } 
 }
 
 //event listeners
 equalsEl.addEventListener('click', () => {
-
-    calculation.push(currentNumber())
-    storedVal = calculation[0]
-    for (i = 0; i<=symbol.length; i++) {
-        console.table(calculation)
-        console.log(storedVal)
-        console.log(symbol)
-        storedVal = operations(calculation[0], calculation[1])[symbol[0]]
-        screenEl.textContent = storedVal
-        symbol.splice(0,1)
-
-        calculation.splice(1,1)
-        calculation[0] = storedVal
-
-
-    }
-
+    assignOperand()
+    calculate()
 })
 
 clearEl.addEventListener('click', () => {
     screenEl.textContent = ''
+    firstOperand = ''
+    secondOperand = ''
     numbersArray = []
-    symbol = []
+    result = ''
     tmpArray = []
-    calculation = []
-    storedVal = 0
+    currentOperation = null
 })
 
 dot.addEventListener('click', (e) => {
@@ -69,17 +77,10 @@ dot.addEventListener('click', (e) => {
     screenEl.textContent = tmpArray.join('')
 })
 
-const softClear = () => {
-    tmpArray = []
-    numbersArray = []
-}
-
-
-
 // operations
-const add = (a, b) => parseInt(a) + parseInt(b)
+const add = (a, b) => parseFloat(a) + parseFloat(b)
 const subtract = (a, b) => a - b
-const multiply = (a, b) => a * b
+const multiply = (a, b) => parseFloat(a) * parseFloat(b)
 const divide = (a, b) => a / b
 const modulo = (a, b) => a % b
 
@@ -94,4 +95,7 @@ const operations = (a, b) => {
 }
 
 
-//document.body.addEventListener('click', currentNumber)
+function debug() {
+    console.table(firstOperand)
+    console.table(secondOperand)
+}
