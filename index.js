@@ -4,6 +4,7 @@ const screenEl = document.querySelector('#screen')
 const equalsEl = document.querySelector('#equals')
 const clearEl = document.querySelector('#clear')
 const dot = document.querySelector('#dot')
+const preview = document.querySelector('#preview')
 
 
 let numbersArray = []
@@ -15,32 +16,30 @@ let currentOperation = null
 
 numbers.forEach(number => number.addEventListener('click' , (e) => {
     tmpArray.push(e.target.textContent)
-    screenEl.textContent = e.target.textContent
+    screenEl.textContent = getCurrentNumber()
     console.table(tmpArray)
 }))
 
 operators.forEach(operator => operator.addEventListener('click', (e) => {
     assignOperand()
+    currentOperation = e.target.id
+    preview.textContent = `${firstOperand} ${opSymbols[currentOperation]} ${secondOperand}`
     if (firstOperand != '' && secondOperand != '') {
         calculate()
-        currentOperation = e.target.id
-        screenEl.textContent = result  
-        tmpArray = []
     } else {
         assignOperand()
-        screenEl.textContent = result
-        currentOperation = e.target.id
-        tmpArray = []
     }
+    screenEl.textContent = result
+    tmpArray = []
 }))
 
 const getCurrentNumber = () => {
     number = tmpArray.join('')
-    console.log(number)
     return parseFloat(number)
 }
 
 function calculate() {
+    preview.textContent = `${firstOperand} ${opSymbols[currentOperation]} ${secondOperand}`
     result = operations(firstOperand,secondOperand)[currentOperation]
     firstOperand = result
     screenEl.textContent = result
@@ -62,15 +61,7 @@ equalsEl.addEventListener('click', () => {
     calculate()
 })
 
-clearEl.addEventListener('click', () => {
-    screenEl.textContent = ''
-    firstOperand = ''
-    secondOperand = ''
-    numbersArray = []
-    result = ''
-    tmpArray = []
-    currentOperation = null
-})
+clearEl.addEventListener('click', clear)
 
 dot.addEventListener('click', (e) => {
     tmpArray.push(e.target.textContent)
@@ -94,8 +85,27 @@ const operations = (a, b) => {
     }
 }
 
+const opSymbols = {
+    'add': '+',
+    'subtract': '-',
+    'multiply': 'x',
+    'divide': '÷',
+    'modulo': '%',
+}
+
 
 function debug() {
     console.table(firstOperand)
     console.table(secondOperand)
+}
+
+function clear() {
+    screenEl.textContent = ''
+    firstOperand = ''
+    secondOperand = ''
+    numbersArray = []
+    result = ''
+    tmpArray = []
+    currentOperation = null
+    preview.textContent = ''
 }
